@@ -1,0 +1,17 @@
+/**
+ * @file
+ */
+.alma-item-list .item-rating-star {
+  display: inline-block;
+}
+
+.pane-alma-item-list .item-loan,
+.pane-alma-item-list .item-loan .reservation-link-ajax a:link,
+.pane-alma-item-list .item-loan .reservation-link-ajax a:visited,
+.pane-alma-related-items .item-loan,
+.pane-alma-related-items .item-loan .reservation-link-ajax a:link,
+.pane-alma-related-items .item-loan .reservation-link-ajax a:visited {
+  font: 10px 'Soho Gothic W01 Regular', Helvetica, Arial, sans-serif;
+  line-height: 14px;
+  white-space: nowrap;
+}

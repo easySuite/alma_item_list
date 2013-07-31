@@ -1,0 +1,98 @@
+<?php
+/**
+ * @file
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function alma_item_list_menu() {
+  $items = array();
+
+  $items['ting/alma_search/js'] = array(
+    'title' => 'Ting search results',
+    'description' => 'Lists new materials as HTML or JSON.',
+    'access arguments' => array('search content'),
+    'page callback' => 'alma_item_list_pages_ting_js',
+    'type' => MENU_CALLBACK,
+    'file' => 'alma_item_list.pages.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function alma_item_list_theme($existing, $type, $theme, $path) {
+  $hooks = array();
+
+  $hooks['alma_item_list_list'] = array(
+    'variables' => array(),
+    'template' => 'alma-item-list_item-list',
+    'path' => $path . '/templates',
+  );
+
+  $hooks['alma_item_list_item'] = array(
+    'variables' => array(),
+    'template' => 'alma-item-list_item',
+    'path' => $path . '/templates',
+  );
+
+  return $hooks;
+}
+
+/**
+ * Implements hook_entity_info_alter().
+ */
+function alma_item_list_entity_info_alter(&$entity_info) {
+  $entity_info['ting_object']['view modes'] += array(
+    'item_list' => array(
+      'label' => t('Item list'),
+      'custom settings' => TRUE,
+    ),
+  );
+}
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ *
+ * Tells CTools (and thus Panels) where to look for plugin code.
+ */
+function alma_item_list_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'ctools' || $module == 'panels') {
+    return 'plugins/' . $plugin;
+  }
+}
+
+/**
+ * Implements hook_image_default_styles().
+ */
+function alma_item_list_image_default_styles() {
+  $styles = array();
+
+  // Exported image style: item_list.
+  $styles['item_list'] = array(
+    'name' => 'item_list',
+    'effects' => array(
+      1 => array(
+        'label' => 'Scale',
+        'help' => 'Scaling will maintain the aspect-ratio of the original image. If only a single dimension is specified, the other dimension will be calculated.',
+        'effect callback' => 'image_scale_effect',
+        'dimensions callback' => 'image_scale_dimensions',
+        'form callback' => 'image_scale_form',
+        'summary theme' => 'image_scale_summary',
+        'module' => 'image',
+        'name' => 'image_scale',
+        'data' => array(
+          'width' => '50',
+          'height' => '',
+          'upscale' => 1,
+        ),
+        'weight' => '1',
+      ),
+    ),
+  );
+
+  return $styles;
+}
