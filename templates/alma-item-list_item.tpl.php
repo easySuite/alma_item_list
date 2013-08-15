@@ -5,10 +5,10 @@
  * Template file for single item list item.
  */
 ?>
-<div class="alma-item-list-item">
+<div class="alma-item-list-item item-local_id-<?php print $local_id; ?>">
   <div class="item-cover">
     <a href="/ting/object/<?php print $faust; ?>">
-      <?php print $cover; ?>
+      <img src="<?php print $cover; ?>" />
     </a>
   </div>
   <div class="item-details">

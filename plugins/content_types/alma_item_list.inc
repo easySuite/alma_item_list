@@ -31,23 +31,21 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
   $objects = ting_get_objects($result['items']);
 
   $render = array();
-  
-  foreach ($objects as $identifier => $object) {
+  $cover_data = array();
+  $ting_objects = array();
+
+  foreach ($objects as $object) {
     if (is_object($object)) {
+      $ting_objects[] = $object;
       $ding_entity = ding_entity_load($object->id);
-      
+
       $loan_form = module_invoke('ding_reservation', 'ding_entity_buttons', 'ding_entity', $ding_entity, 'ajax');
-      $cv = array(
-        '#theme' => 'ting_object_cover',
-        '#object' => $ding_entity,
-        '#image_style' => 'item_list',
-        '#attached' => array(
-          'js' => array(drupal_get_path('module', 'ting_covers') . '/js/ting-covers.js'),
-        ),
-      );
-      $render[] = theme('alma_item_list_item', array(
+      $faust = explode(':', $ding_entity->ding_entity_id);
+
+      $render[$faust[1]] = array(
+        'local_id' => $faust[1],
         'faust' => $ding_entity->ding_entity_id,
-        'cover' => drupal_render($cv),
+        'cover' => '',
         'title' => $ding_entity->title,
         'author' => $ding_entity->creator,
         'year' => $ding_entity->date,
@@ -56,7 +54,13 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
         'rating' => 0,
         'rating_count' => 0,
         'review_count' => 0,
-      ));
+      );
+
+      $cover_data[] = array(
+        'local_id' => $faust[1],
+        'owner_id' => $faust[0],
+        'image_style' => 'item_list',
+      );
 
       if (module_exists('ding_voxb') && isset($ding_entity->isbn[0])) {
         $isbn = $ding_entity->isbn[0];
@@ -72,16 +76,38 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
             'rating_count' => $detail->getRatingCount(),
             'review_count' => $detail->getReviews('review')->getCount(),
           );
-          
+
           $render += $voxb;
         }
       }
     }
   }
 
+  module_load_include('inc', 'ting_covers', 'ting_covers.pages');
+  $covers = ting_covers_objects(FALSE, $cover_data);
+
+  // Assign covers.
+  foreach ($covers as $v) {
+    $render[$v['local_id']]['cover'] = $v['url'];
+  }
+
+  // Cleanup items w/o covers.
+  foreach ($render as $k => $v) {
+    if (empty($v['cover'])) {
+      unset($render[$k]);
+    }
+  }
+
+  // Generate markup.
+  $content = array();
+  foreach ($render as $v) {
+    $content[] = theme('alma_item_list_item', $v);
+  }
+
   drupal_add_css(drupal_get_path('module', 'alma_item_list') . '/css/alma_item_list.css', 'file');
+
   $block = new stdClass();
-  $block->content = theme('alma_item_list_list', array('items' => implode('', $render)));
+  $block->content = theme('alma_item_list_list', array('items' => implode('', $content)));
 
   return $block;
 }
