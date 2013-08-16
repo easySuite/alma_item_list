@@ -23,79 +23,88 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
   $query = $conf['alma_search_query'];
   $limit = $conf['alma_search_limit'];
   $page = $conf['alma_search_page'];
-  $start = ($page - 1) * $limit;
-
-  $result = alma_client_invoke('run_lms_search', $query, 'native', $start, $limit);
 
   module_load_include('ting', 'client');
-  $objects = ting_get_objects($result['items']);
+  module_load_include('inc', 'ting_covers', 'ting_covers.pages');
 
   $render = array();
   $cover_data = array();
   $ting_objects = array();
 
-  foreach ($objects as $object) {
-    if (is_object($object)) {
-      $ting_objects[] = $object;
-      $ding_entity = ding_entity_load($object->id);
+  while (count($render) != $limit) {
+    $start = ($page - 1) * $limit;
+    $result = alma_client_invoke('run_lms_search', $query, 'native', $start, $limit);
 
-      $loan_form = module_invoke('ding_reservation', 'ding_entity_buttons', 'ding_entity', $ding_entity, 'ajax');
-      $faust = explode(':', $ding_entity->ding_entity_id);
+    if ($result['status'] == 'error') {
+      break;
+    }
 
-      $render[$faust[1]] = array(
-        'local_id' => $faust[1],
-        'faust' => $ding_entity->ding_entity_id,
-        'cover' => '',
-        'title' => $ding_entity->title,
-        'author' => $ding_entity->creator,
-        'year' => $ding_entity->date,
-        'loan_form' => drupal_render($loan_form),
-        'has_rating' => FALSE,
-        'rating' => 0,
-        'rating_count' => 0,
-        'review_count' => 0,
-      );
+    $objects = ting_get_objects($result['items']);
 
-      $cover_data[] = array(
-        'local_id' => $faust[1],
-        'owner_id' => $faust[0],
-        'image_style' => 'item_list',
-      );
+    foreach ($objects as $object) {
+      if (is_object($object)) {
+        $ting_objects[] = $object;
+        $ding_entity = ding_entity_load($object->id);
 
-      if (module_exists('ding_voxb') && isset($ding_entity->isbn[0])) {
-        $isbn = $ding_entity->isbn[0];
-        $voxb_details = new VoxbItems();
-        $voxb_details->addReviewHandler('review', new VoxbReviews());
-        $response = $voxb_details->fetchByISBN(array($isbn));
-        $detail = $voxb_details->getItem($isbn);
+        $loan_form = module_invoke('ding_reservation', 'ding_entity_buttons', 'ding_entity', $ding_entity, 'ajax');
+        $faust = explode(':', $ding_entity->ding_entity_id);
 
-        if ($detail) {
-          $voxb = array(
-            'has_rating' => TRUE,
-            'rating' => (int) round($detail->getRating() / 20),
-            'rating_count' => $detail->getRatingCount(),
-            'review_count' => $detail->getReviews('review')->getCount(),
-          );
+        $render[$faust[1]] = array(
+          'local_id' => $faust[1],
+          'faust' => $ding_entity->ding_entity_id,
+          'cover' => '',
+          'title' => $ding_entity->title,
+          'author' => $ding_entity->creator,
+          'year' => $ding_entity->date,
+          'loan_form' => drupal_render($loan_form),
+          'has_rating' => FALSE,
+          'rating' => 0,
+          'rating_count' => 0,
+          'review_count' => 0,
+        );
 
-          $render += $voxb;
+        $cover_data[] = array(
+          'local_id' => $faust[1],
+          'owner_id' => $faust[0],
+          'image_style' => 'item_list',
+        );
+
+        if (module_exists('ding_voxb') && isset($ding_entity->isbn[0])) {
+          $isbn = $ding_entity->isbn[0];
+          $voxb_details = new VoxbItems();
+          $voxb_details->addReviewHandler('review', new VoxbReviews());
+          $response = $voxb_details->fetchByISBN(array($isbn));
+          $detail = $voxb_details->getItem($isbn);
+
+          if ($detail) {
+            $voxb = array(
+              'has_rating' => TRUE,
+              'rating' => (int) round($detail->getRating() / 20),
+              'rating_count' => $detail->getRatingCount(),
+              'review_count' => $detail->getReviews('review')->getCount(),
+            );
+
+            $render += $voxb;
+          }
         }
       }
     }
-  }
 
-  module_load_include('inc', 'ting_covers', 'ting_covers.pages');
-  $covers = ting_covers_objects(FALSE, $cover_data);
+    $covers = ting_covers_objects(FALSE, $cover_data);
 
-  // Assign covers.
-  foreach ($covers as $v) {
-    $render[$v['local_id']]['cover'] = $v['url'];
-  }
-
-  // Cleanup items w/o covers.
-  foreach ($render as $k => $v) {
-    if (empty($v['cover'])) {
-      unset($render[$k]);
+    // Assign covers.
+    foreach ($covers as $v) {
+      $render[$v['local_id']]['cover'] = $v['url'];
     }
+
+    // Cleanup items w/o covers.
+    foreach ($render as $k => $v) {
+      if (empty($v['cover'])) {
+        unset($render[$k]);
+      }
+    }
+
+    $page++;
   }
 
   // Generate markup.
