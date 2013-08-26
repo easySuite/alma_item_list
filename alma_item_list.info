@@ -1,0 +1,11 @@
+name = Alma Item List
+description = Search directly in DDELibra using native ccl search language
+package = Ding!
+core = 7.x
+features[image][] = item_list
+dependencies[] = image
+dependencies[] = search
+dependencies[] = ting
+dependencies[] = ting_covers
+dependencies[] = transliteration
+dependencies[] = alma
