@@ -31,11 +31,11 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
   $cover_data = array();
   $ting_objects = array();
 
-  while (count($render) != $limit) {
+  while (TRUE) {
     $start = $page * $limit;
     $result = alma_client_invoke('run_lms_search', $query, 'native', $start, $limit);
 
-    if ($result['status'] == 'error' || $result['numrecordsTotal'] == 0 || $result['numRecords'] == 0) {
+    if (count($render) == $limit || $result['status'] == 'error' || $result['numrecordsTotal'] == 0 || $result['numRecords'] == 0) {
       break;
     }
 
@@ -63,7 +63,7 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
           'review_count' => 0,
         );
 
-        $cover_data[] = array(
+        $cover_data = array(
           'local_id' => $faust[1],
           'owner_id' => $faust[0],
           'image_style' => 'item_list',
@@ -87,20 +87,24 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
             $render += $voxb;
           }
         }
-      }
-    }
 
-    $covers = ting_covers_objects(FALSE, $cover_data);
+        $covers = ting_covers_objects(FALSE, array($cover_data));
 
-    // Assign covers.
-    foreach ($covers as $v) {
-      $render[$v['local_id']]['cover'] = $v['url'];
-    }
+        // Assign covers.
+        foreach ($covers as $v) {
+          $render[$v['local_id']]['cover'] = $v['url'];
+        }
 
-    // Cleanup items w/o covers.
-    foreach ($render as $k => $v) {
-      if (empty($v['cover'])) {
-        unset($render[$k]);
+        // Cleanup items w/o covers.
+        foreach ($render as $k => $v) {
+          if (empty($v['cover'])) {
+            unset($render[$k]);
+          }
+        }
+
+        if (count($render) == $limit) {
+          break 2;
+        }
       }
     }
 
