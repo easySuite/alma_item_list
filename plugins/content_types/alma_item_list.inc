@@ -22,7 +22,7 @@ $plugin = array(
 function alma_item_list_search_content_type_render($subtype, $conf, $panel_args, $context) {
   $query = $conf['alma_search_query'];
   $limit = $conf['alma_search_limit'];
-  $page = $conf['alma_search_page'];
+  $page = 0;
 
   module_load_include('ting', 'client');
   module_load_include('inc', 'ting_covers', 'ting_covers.pages');
@@ -31,11 +31,11 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
   $cover_data = array();
   $ting_objects = array();
 
-  while (count($render) != $limit) {
-    $start = ($page - 1) * $limit;
+  while (TRUE) {
+    $start = $page * $limit;
     $result = alma_client_invoke('run_lms_search', $query, 'native', $start, $limit);
 
-    if ($result['status'] == 'error') {
+    if (count($render) == $limit || $result['status'] == 'error' || $result['numrecordsTotal'] == 0 || $result['numRecords'] == 0) {
       break;
     }
 
@@ -63,7 +63,7 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
           'review_count' => 0,
         );
 
-        $cover_data[] = array(
+        $cover_data = array(
           'local_id' => $faust[1],
           'owner_id' => $faust[0],
           'image_style' => 'item_list',
@@ -87,20 +87,24 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
             $render += $voxb;
           }
         }
-      }
-    }
 
-    $covers = ting_covers_objects(FALSE, $cover_data);
+        $covers = ting_covers_objects(FALSE, array($cover_data));
 
-    // Assign covers.
-    foreach ($covers as $v) {
-      $render[$v['local_id']]['cover'] = $v['url'];
-    }
+        // Assign covers.
+        foreach ($covers as $v) {
+          $render[$v['local_id']]['cover'] = $v['url'];
+        }
 
-    // Cleanup items w/o covers.
-    foreach ($render as $k => $v) {
-      if (empty($v['cover'])) {
-        unset($render[$k]);
+        // Cleanup items w/o covers.
+        foreach ($render as $k => $v) {
+          if (empty($v['cover'])) {
+            unset($render[$k]);
+          }
+        }
+
+        if (count($render) == $limit) {
+          break 2;
+        }
       }
     }
 
@@ -149,29 +153,7 @@ function alma_item_list_search_content_type_edit_form($form, &$form_state) {
     '#default_value' => isset($conf['alma_search_limit']) ? $conf['alma_search_limit'] : '',
   );
 
-  $form['alma_search_page'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Page'),
-    '#description' => t('Page offset from where to start the results. Wrong values can result in empty result set.'),
-    '#default_value' => isset($conf['alma_search_page']) ? $conf['alma_search_page'] : '1',
-    '#size' => 2,
-    '#maxlength' => 3,
-  );
-
   return $form;
-}
-
-/**
- * Custom validation handler for settings form.
- *
- * @see alma_item_list_search_content_type_edit_form().
- */
-function alma_item_list_search_content_type_edit_form_validate($form, &$form_state) {
-  $input = $form_state['input'];
-
-  if (!is_numeric($input['alma_search_page']) || $input['alma_search_page'] < 1) {
-    form_set_error('alma_search_page', t('The value must be a positive number'));
-  }
 }
 
 /**
@@ -184,5 +166,4 @@ function alma_item_list_search_content_type_edit_form_submit($form, &$form_state
 
   $form_state['conf']['alma_search_query'] = check_plain(trim($input['alma_search_query']));
   $form_state['conf']['alma_search_limit'] = $input['alma_search_limit'];
-  $form_state['conf']['alma_search_page'] = $input['alma_search_page'];
 }
