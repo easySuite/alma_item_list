@@ -36,7 +36,7 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
   }
   else {
     while (count($items) < $limit) {
-      $start = ($page - 1) * $limit;
+      $start = $page * $limit;
 
       $result = alma_client_invoke(
         'run_lms_search',
