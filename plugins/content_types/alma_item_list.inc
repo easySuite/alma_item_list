@@ -29,7 +29,7 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
   $render = array();
 
   $cid = 'alma_item_list-' . md5($query . $limit . $page);
-  $cache_ttl = $conf['alma_search_cache'];
+  $cache_ttl = isset($conf['alma_search_cache']) ? $conf['alma_search_cache'] : '86400';
   $cache = cache_get($cid, 'cache');
   if (!empty($cache->data)) {
     $render = $cache->data;
@@ -194,6 +194,7 @@ function alma_item_list_search_content_type_edit_form($form, &$form_state) {
     '18144000' => t('1 month'),
     '54432000' => t('3 months'),
   );
+
   $form['alma_search_cache'] = array(
     '#type' => 'select',
     '#title' => t('Cache'),
