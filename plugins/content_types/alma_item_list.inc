@@ -38,13 +38,20 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
     while (count($items) < $limit) {
       $start = $page * $limit;
 
-      $result = alma_client_invoke(
-        'run_lms_search',
-        $query,
-        'native',
-        $start,
-        $limit
-      );
+      try {
+        $result = alma_client_invoke(
+          'run_lms_search',
+          $query,
+          'native',
+          $start,
+          $limit
+        );
+      }
+      catch(AlmaClientHTTPError $e) {
+        watchdog_exception('ding_item_list', $e);
+
+        return (object) array('content' => '');
+      }
 
       // Search did not give any results.
       if ($result['numRecords'] == 0) {
