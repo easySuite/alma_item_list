@@ -212,7 +212,7 @@ function alma_item_list_search_content_type_edit_form($form, &$form_state) {
 function alma_item_list_search_content_type_edit_form_submit($form, &$form_state) {
   $input = $form_state['input'];
 
-  $form_state['conf']['alma_search_query'] = check_plain(trim($input['alma_search_query']));
+  $form_state['conf']['alma_search_query'] = trim($input['alma_search_query']);
   $form_state['conf']['alma_search_limit'] = $input['alma_search_limit'];
   $form_state['conf']['alma_search_cache'] = $input['alma_search_cache'];
 }
