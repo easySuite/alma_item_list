@@ -4,6 +4,8 @@
  * Provides search results as a Panels content type.
  */
 
+define('ALMA_ITEM_LIST_DEFAULT_CACHE_TTL', '86400');
+
 $plugin = array(
   'title' => t('Alma search list'),
   'single' => TRUE,
@@ -29,7 +31,7 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
   $render = array();
 
   $cid = 'alma_item_list-' . md5($query . $limit . $page);
-  $cache_ttl = $conf['alma_search_cache'];
+  $cache_ttl = isset($conf['alma_search_cache']) ? $conf['alma_search_cache'] : ALMA_ITEM_LIST_DEFAULT_CACHE_TTL;
   $cache = cache_get($cid, 'cache');
   if (!empty($cache->data)) {
     $render = $cache->data;
@@ -205,7 +207,7 @@ function alma_item_list_search_content_type_edit_form($form, &$form_state) {
     '#type' => 'select',
     '#title' => t('Cache'),
     '#options' => $options,
-    '#default_value' => isset($conf['alma_search_cache']) ? $conf['alma_search_cache'] : '86400',
+    '#default_value' => isset($conf['alma_search_cache']) ? $conf['alma_search_cache'] : ALMA_ITEM_LIST_DEFAULT_CACHE_TTL,
   );
 
   return $form;
