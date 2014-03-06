@@ -4,6 +4,8 @@
  * Provides search results as a Panels content type.
  */
 
+define('ALMA_ITEM_LIST_DEFAULT_CACHE_TTL', '86400');
+
 $plugin = array(
   'title' => t('Alma search list'),
   'single' => TRUE,
@@ -29,7 +31,7 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
   $render = array();
 
   $cid = 'alma_item_list-' . md5($query . $limit . $page);
-  $cache_ttl = $conf['alma_search_cache'];
+  $cache_ttl = isset($conf['alma_search_cache']) ? $conf['alma_search_cache'] : ALMA_ITEM_LIST_DEFAULT_CACHE_TTL;
   $cache = cache_get($cid, 'cache');
   if (!empty($cache->data)) {
     $render = $cache->data;
@@ -38,13 +40,20 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
     while (count($items) < $limit) {
       $start = $page * $limit;
 
-      $result = alma_client_invoke(
-        'run_lms_search',
-        $query,
-        'native',
-        $start,
-        $limit
-      );
+      try {
+        $result = alma_client_invoke(
+          'run_lms_search',
+          $query,
+          'native',
+          $start,
+          $limit
+        );
+      }
+      catch(AlmaClientHTTPError $e) {
+        watchdog_exception('ding_item_list', $e);
+
+        return (object) array('content' => '');
+      }
 
       // Search did not give any results.
       if ($result['numRecords'] == 0) {
@@ -194,11 +203,12 @@ function alma_item_list_search_content_type_edit_form($form, &$form_state) {
     '18144000' => t('1 month'),
     '54432000' => t('3 months'),
   );
+
   $form['alma_search_cache'] = array(
     '#type' => 'select',
     '#title' => t('Cache'),
     '#options' => $options,
-    '#default_value' => isset($conf['alma_search_cache']) ? $conf['alma_search_cache'] : '86400',
+    '#default_value' => isset($conf['alma_search_cache']) ? $conf['alma_search_cache'] : ALMA_ITEM_LIST_DEFAULT_CACHE_TTL,
   );
 
   return $form;
@@ -212,7 +222,7 @@ function alma_item_list_search_content_type_edit_form($form, &$form_state) {
 function alma_item_list_search_content_type_edit_form_submit($form, &$form_state) {
   $input = $form_state['input'];
 
-  $form_state['conf']['alma_search_query'] = check_plain(trim($input['alma_search_query']));
+  $form_state['conf']['alma_search_query'] = trim($input['alma_search_query']);
   $form_state['conf']['alma_search_limit'] = $input['alma_search_limit'];
   $form_state['conf']['alma_search_cache'] = $input['alma_search_cache'];
 }
