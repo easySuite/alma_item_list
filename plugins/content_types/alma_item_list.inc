@@ -24,7 +24,7 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
   $limit = $conf['alma_search_limit'];
   $page = 0;
 
-  module_load_include('ting', 'client');
+  module_load_include('inc', 'ting', 'ting.client');
   module_load_include('inc', 'ting_covers', 'ting_covers.pages');
 
   $items = array();
@@ -65,9 +65,14 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
         break;
       }
 
+      array_walk($result['items'], function (&$v, $k) {
+        $v = '870970-basis:' . $v;
+      });
+
       $objects = ting_get_objects($result['items']);
       $cover_data = array();
       $items_tmp = array();
+
       foreach ($objects as $object) {
         if (!is_object($object)) {
           continue;
@@ -81,6 +86,7 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
           'image_style' => 'item_list',
         );
       }
+
       $covers = ting_covers_objects(FALSE, $cover_data);
 
       // Assign covers.
@@ -94,6 +100,7 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
           break(2);
         }
       }
+
       $page++;
     }
 
