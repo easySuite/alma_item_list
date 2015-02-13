@@ -109,7 +109,7 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
       $faust = explode(':', $item['object']->id);
       $ding_entity = ding_entity_load($item['object']->id);
 
-      $loan_form = module_invoke(
+      $reservation_form = module_invoke(
         'ding_reservation',
         'ding_entity_buttons',
         'ding_entity',
@@ -122,9 +122,9 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
         'faust' => $ding_entity->ding_entity_id,
         'cover' => $item['cover'],
         'title' => $ding_entity->title,
-        'author' => $ding_entity->creators[0],
+        'author' => isset($ding_entity->creators[0]) ? $ding_entity->creators[0] : '',
         'year' => $ding_entity->date,
-        'loan_form' => drupal_render($loan_form),
+        'loan_form' => drupal_render($reservation_form),
         'has_rating' => FALSE,
         'rating' => 0,
         'rating_count' => 0,
