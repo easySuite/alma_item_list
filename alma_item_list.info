@@ -1,5 +1,5 @@
 name = Alma Item List
-description = Search directly in DDELibra using native ccl search language
+description = Search directly in DDELibra using native CCL-language.
 package = easyDDB
 core = 7.x
 features[image][] = item_list
@@ -9,5 +9,5 @@ dependencies[] = ting
 dependencies[] = ting_covers
 dependencies[] = transliteration
 dependencies[] = alma
-version = 7.x-1.0.1
+version = 7.x-2.0.0
 
