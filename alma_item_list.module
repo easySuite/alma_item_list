@@ -4,24 +4,6 @@
  */
 
 /**
- * Implements hook_menu().
- */
-function alma_item_list_menu() {
-  $items = array();
-
-  $items['ting/alma_search/js'] = array(
-    'title' => 'Ting search results',
-    'description' => 'Lists new materials as HTML or JSON.',
-    'access arguments' => array('search content'),
-    'page callback' => 'alma_item_list_pages_ting_js',
-    'type' => MENU_CALLBACK,
-    'file' => 'alma_item_list.pages.inc',
-  );
-
-  return $items;
-}
-
-/**
  * Implements hook_theme().
  */
 function alma_item_list_theme($existing, $type, $theme, $path) {
