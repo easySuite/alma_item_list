@@ -57,6 +57,9 @@ $base-font-weight-bold:           600;
 }
 
 .pane-alma-item-list {
+  background-color: $white;
+  padding: 10px;
+  
   .item-loan {
     white-space: nowrap;
     .reservation-link-ajax a {
@@ -66,7 +69,12 @@ $base-font-weight-bold:           600;
 }
 
 .alma-item-list {
+  margin: 10px 0;
 
+  .item-rating-star {
+    display: inline-block;
+  }
+  
   .alma-item-list-item {
     overflow: hidden;
     margin-bottom: 10px;
