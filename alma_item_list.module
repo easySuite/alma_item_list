@@ -7,6 +7,7 @@
  * Implements hook_theme().
  */
 function alma_item_list_theme($existing, $type, $theme, $path) {
+  drupal_add_css(drupal_get_path('module', 'alma_item_list') . '/css/alma_item_list.css', array('type' => 'file'));
   $hooks = array();
 
   $hooks['alma_item_list_list'] = array(

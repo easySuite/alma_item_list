@@ -1,13 +1,75 @@
-/**
- * @file
- */
+/* Colors variables
+   ========================================================================== */
+/* Font variables
+   ========================================================================== */
+.alma-item-list .item-details .reserve-button {
+  border-radius: 10px;
+  display: inline-block;
+  font-size: 100%;
+  padding: 10px;
+  position: relative;
+  box-shadow: 0 0 1px #595959 inset;
+  cursor: pointer;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 100%;
+}
+.alma-item-list .item-details .reserve-button:focus, .alma-item-list .item-details .reserve-button:hover, .alma-item-list .item-details .reserve-button:active {
+  text-decoration: none;
+}
+.alma-item-list .item-details .disabled.reserve-button, .alma-item-list .item-details [disabled].reserve-button {
+  opacity: 0.65;
+  box-shadow: none;
+  cursor: default;
+}
+
 .alma-item-list .item-rating-star {
   display: inline-block;
 }
 
-.pane-alma-item-list .item-loan,
-.pane-alma-item-list .item-loan .reservation-link-ajax a,
-.pane-alma-related-items .item-loan,
-.pane-alma-related-items .item-loan .reservation-link-ajax a {
+.pane-alma-item-list {
+  background-color: #fff;
+  padding: 10px;
+}
+.pane-alma-item-list .item-loan {
   white-space: nowrap;
+}
+.pane-alma-item-list .item-loan .reservation-link-ajax a {
+  white-space: nowrap;
+}
+
+.alma-item-list {
+  margin: 10px 0;
+}
+.alma-item-list .item-rating-star {
+  display: inline-block;
+}
+.alma-item-list .alma-item-list-item {
+  overflow: hidden;
+  margin-bottom: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #ccc;
+  font-size: 16px;
+}
+.alma-item-list .item-cover {
+  float: left;
+}
+.alma-item-list .item-details {
+  margin-left: 65px;
+}
+.alma-item-list .item-details .item-author {
+  font-size: 90%;
+}
+.alma-item-list .item-details .item-title a {
+  font-weight: 600;
+}
+.alma-item-list .item-details .reserve-button {
+  margin-top: 10px;
+  font-size: 100%;
+}
+.alma-item-list .item-details .item-loan,
+.alma-item-list .item-details .item-loan a {
+  font-size: 100%;
+  font-family: inherit;
+  line-height: inherit;
 }
