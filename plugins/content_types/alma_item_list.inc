@@ -109,8 +109,7 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
       $faust = explode(':', $item['object']->id);
       $ding_entity = ding_entity_load($item['object']->id);
 
-      $reservation_form = module_invoke(
-        'ding_reservation',
+      $reservation_form = module_invoke_all(
         'ding_entity_buttons',
         'ding_entity',
         $ding_entity,
