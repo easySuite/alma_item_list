@@ -100,7 +100,7 @@ $base-font-weight-bold:           600;
 
     .reserve-button {
       @extend %button;
-      margin-top: 10px;
+      margin-left: 10px;
       font-size: $font-size-reset;
     }
     .item-loan {
