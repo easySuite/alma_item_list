@@ -10,7 +10,7 @@ $plugin = array(
   'title' => t('Alma search list'),
   'single' => TRUE,
   'description' => t('A list of the most recently acquired materials'),
-  'category' => t('Ting'),
+  'category' => t('easyDDB'),
   'render callback' => 'alma_item_list_search_content_type_render',
   'admin title' => 'alma_item_list_search_content_type_admin_title',
   'edit form' => 'alma_item_list_search_content_type_edit_form',
@@ -109,8 +109,7 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
       $faust = explode(':', $item['object']->id);
       $ding_entity = ding_entity_load($item['object']->id);
 
-      $reservation_form = module_invoke(
-        'ding_reservation',
+      $reservation_form = module_invoke_all(
         'ding_entity_buttons',
         'ding_entity',
         $ding_entity,
