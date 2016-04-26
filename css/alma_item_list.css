@@ -65,6 +65,7 @@
 }
 .alma-item-list .item-details .reserve-button {
   margin-left: 10px;
+  padding: 8px 10px;
   font-size: 100%;
 }
 .alma-item-list .item-details .item-loan,
