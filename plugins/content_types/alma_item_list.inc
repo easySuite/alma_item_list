@@ -20,7 +20,7 @@ $plugin = array(
  * Return the pane contents.
  */
 function alma_item_list_search_content_type_render($subtype, $conf, $panel_args, $context) {
-  $query = $conf['alma_search_query'] . ' AND term.acSource="bibliotekskatalog"';
+  $query = $conf['alma_search_query'];
   $limit = $conf['alma_search_limit'];
   $page = 0;
 
