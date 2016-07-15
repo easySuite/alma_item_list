@@ -81,7 +81,7 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
       if (!isset($v['urls']['detail'])) {
         continue;
       }
-      
+
       $items[$v['local_id']] = array(
         'cover' => $v['urls']['detail'],
         'object' => $items_tmp[$v['local_id']],
@@ -144,8 +144,8 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
   // Load required ajax for reservation, not get called if data is from cache.
   drupal_add_library('system', 'drupal.ajax');
   drupal_add_library('system', 'jquery.form');
-  drupal_add_js(drupal_get_path('module', 'ding_availability') . '/js/ding_availability_lib.js');
-  drupal_add_js(drupal_get_path('module', 'ding_reservation') . '/js/ding_reservation_scripts.js');
+  drupal_add_js(drupal_get_path('module', 'ding_availability') . '/js/ding_availability.js');
+  drupal_add_js(drupal_get_path('module', 'ding_reservation') . '/js/ding_reservation.js');
 
   // Generate markup.
   $content = array();
