@@ -78,8 +78,12 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
 
     // Assign covers.
     foreach ($covers as $v) {
+      if (!isset($v['urls']['detail'])) {
+        continue;
+      }
+      
       $items[$v['local_id']] = array(
-        'cover' => $v['url'],
+        'cover' => $v['urls']['detail'],
         'object' => $items_tmp[$v['local_id']],
       );
       // Exit search loop if we have reached limit.
