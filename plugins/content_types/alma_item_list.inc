@@ -37,71 +37,59 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
     $render = $cache->data;
   }
   else {
-    while (count($items) < $limit) {
-      $start = $page * $limit;
+    try {
+      $result = alma_client_invoke(
+        'run_lms_search',
+        $query,
+        'native',
+        0,
+        200
+      );
+    }
+    catch (AlmaClientHTTPError $e) {
+      watchdog_exception('ding_item_list', $e);
 
-      try {
-        $result = alma_client_invoke(
-          'run_lms_search',
-          $query,
-          'native',
-          $start,
-          $limit
-        );
+      return (object) array('content' => '');
+    }
+
+    array_walk($result['items'], function (&$v, $k) {
+      $v = '870970-basis:' . $v;
+    });
+
+    $objects = ting_get_objects($result['items']);
+    $cover_data = array();
+    $items_tmp = array();
+
+    foreach ($objects as $object) {
+      if (!is_object($object)) {
+        continue;
       }
-      catch(AlmaClientHTTPError $e) {
-        watchdog_exception('ding_item_list', $e);
+      $faust = explode(':', $object->id);
+      $items_tmp[$faust[1]] = $object;
 
-        return (object) array('content' => '');
+      $cover_data[] = array(
+        'local_id' => $faust[1],
+        'owner_id' => $faust[0],
+        'image_style' => 'item_list',
+      );
+    }
+
+    $covers = ting_covers_objects(FALSE, $cover_data);
+
+    // Assign covers.
+    foreach ($covers as $v) {
+      if (!isset($v['urls']['detail'])) {
+        continue;
       }
 
-      // Search did not give any results.
-      if ($result['numRecords'] == 0) {
+      $items[$v['local_id']] = array(
+        'cover' => $v['urls']['detail'],
+        'object' => $items_tmp[$v['local_id']],
+      );
+      // Exit search loop if we have reached limit.
+      if (count($items) == $limit) {
         break;
       }
-
-      // An error occurred while searching.
-      if ($result['status'] == 'error') {
-        break;
-      }
-
-      array_walk($result['items'], function (&$v, $k) {
-        $v = '870970-basis:' . $v;
-      });
-
-      $objects = ting_get_objects($result['items']);
-      $cover_data = array();
-      $items_tmp = array();
-
-      foreach ($objects as $object) {
-        if (!is_object($object)) {
-          continue;
-        }
-        $faust = explode(':', $object->id);
-        $items_tmp[$faust[1]] = $object;
-
-        $cover_data[] = array(
-          'local_id' => $faust[1],
-          'owner_id' => $faust[0],
-          'image_style' => 'item_list',
-        );
-      }
-
-      $covers = ting_covers_objects(FALSE, $cover_data);
-
-      // Assign covers.
-      foreach ($covers as $v) {
-        $items[$v['local_id']] = array(
-          'cover' => $v['url'],
-          'object' => $items_tmp[$v['local_id']],
-        );
-        // Exit search loop if we have reached limit.
-        if (count($items) == $limit) {
-          break(2);
-        }
-      }
-
-      $page++;
     }
 
     // Process items, load entities, voxb, etc.
@@ -156,8 +144,8 @@ function alma_item_list_search_content_type_render($subtype, $conf, $panel_args,
   // Load required ajax for reservation, not get called if data is from cache.
   drupal_add_library('system', 'drupal.ajax');
   drupal_add_library('system', 'jquery.form');
-  drupal_add_js(drupal_get_path('module', 'ding_availability') . '/js/ding_availability_lib.js');
-  drupal_add_js(drupal_get_path('module', 'ding_reservation') . '/js/ding_reservation_scripts.js');
+  drupal_add_js(drupal_get_path('module', 'ding_availability') . '/js/ding_availability.js');
+  drupal_add_js(drupal_get_path('module', 'ding_reservation') . '/js/ding_reservation.js');
 
   // Generate markup.
   $content = array();
