@@ -44,15 +44,20 @@ function alma_item_list_theme($existing, $type, $theme, $path) {
  * Pass ajax loaded content as json output.
  */
 function alma_item_list_ajax() {
-  list($query, $limit, $cache) = array_values($_GET['content']);
-  $content = alma_item_list_get_content($query, $limit, $cache);
+  if (!empty($_GET['content']) && count($_GET['content']) > 2) {
+    list($query, $limit, $cache) = array_values($_GET['content']);
+    $content = alma_item_list_get_content($query, $limit, $cache);
+  }
+  else {
+  $content = array();
+    watchdog('alma_item_list', t('Wrong parameters are passed from the query'));
+  }
 
   // Generate markup for each item.
   $items = array();
   foreach ($content as $v) {
     $items[] = theme('alma_item_list_item', $v);
   }
-
   $markup = theme('alma_item_list_list', array('items' => implode('', $items)));
 
   drupal_json_output($markup);
@@ -60,6 +65,16 @@ function alma_item_list_ajax() {
 
 /**
  * Get ting objects based on query and limit.
+ *
+ * @param string $query
+ *   Search query string.
+ * @param int $limit
+ *   Number of searched items.
+ * @param int $cache
+ *   Cache time.
+ *
+ * @return array
+ *   Ting objects array.
  */
 function alma_item_list_get_content($query, $limit, $cache) {
   module_load_include('inc', 'ting', 'ting.client');
