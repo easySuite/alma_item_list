@@ -1,6 +1,6 @@
 name = Alma Item List
 description = Search directly in DDELibra using native CCL-language.
-package = easyDDB
+package = easyOPAC
 core = 7.x
 features[image][] = item_list
 dependencies[] = image
