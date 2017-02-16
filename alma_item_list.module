@@ -133,12 +133,12 @@ function alma_item_list_get_content($query, $limit, $cache) {
 
     // Assign covers.
     foreach ($covers as $v) {
-      if (!isset($v['urls']['detail'])) {
+      if (!isset($v['urls']['thumbnail'])) {
         continue;
       }
 
       $items[$v['local_id']] = array(
-        'cover' => $v['urls']['detail'],
+        'cover' => $v['urls']['thumbnail'],
         'object' => $items_tmp[$v['local_id']],
       );
       // Exit search loop if we have reached limit.
@@ -162,7 +162,6 @@ function alma_item_list_get_content($query, $limit, $cache) {
       $render[$faust[1]] = array(
         'local_id' => $faust[1],
         'faust' => $ding_entity->ding_entity_id,
-        'cover' => $item['cover'],
         'title' => $ding_entity->title,
         'author' => isset($ding_entity->creators[0]) ? $ding_entity->creators[0] : '',
         'year' => $ding_entity->date,

@@ -6,10 +6,8 @@
  */
 ?>
 <div class="alma-item-list-item item-local_id-<?php print $local_id; ?>">
-  <div class="item-cover">
-    <a href="/ting/object/<?php print $faust; ?>">
-      <img src="<?php print $cover; ?>" />
-    </a>
+  <div class="ting-cover ting-cover-processing" data-local_id="<?php print $local_id; ?>">
+    <a href="/ting/object/<?php print $faust; ?>"></a>
   </div>
   <div class="item-details">
     <div class="item-title"><a href="/ting/object/<?php print $faust; ?>"><?php print $title; ?></a></div>
