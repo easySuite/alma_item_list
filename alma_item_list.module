@@ -154,7 +154,7 @@ function alma_item_list_get_content($query, $limit, $cache) {
       $img = array(
         '#theme' => 'ting_object_cover',
         '#object' => $ding_entity,
-        '#image_style' => 'ding_item_list3',
+        '#image_style' => 'ding_item_list',
         '#attached' => array(
           'js' => array(drupal_get_path('module', 'ting_covers') . '/js/ting-covers.js'),
         ),
