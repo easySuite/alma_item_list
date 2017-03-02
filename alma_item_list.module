@@ -49,7 +49,7 @@ function alma_item_list_ajax() {
     $content = alma_item_list_get_content($query, $limit, $cache);
   }
   else {
-  $content = array();
+    $content = array();
     watchdog('alma_item_list', t('Wrong parameters are passed from the query'));
   }
 
@@ -112,34 +112,26 @@ function alma_item_list_get_content($query, $limit, $cache) {
     });
 
     $objects = ting_get_objects($result['items']);
-    $cover_data = array();
     $items_tmp = array();
+    $cover_ids = array();
 
     foreach ($objects as $object) {
       if (!is_object($object)) {
         continue;
       }
-      $faust = explode(':', $object->id);
-      $items_tmp[$faust[1]] = $object;
+      $items_tmp[$object->id] = $object;
 
-      $cover_data[] = array(
-        'local_id' => $faust[1],
-        'owner_id' => $faust[0],
-        'image_style' => 'item_list',
-      );
+      $cover_ids[] = $object->id;
     }
 
-    $covers = ting_covers_objects(FALSE, $cover_data);
+    $covers = ting_covers_get($cover_ids);
 
     // Assign covers.
-    foreach ($covers as $v) {
-      if (!isset($v['urls']['thumbnail'])) {
-        continue;
-      }
+    foreach ($covers as $key => $v) {
 
-      $items[$v['local_id']] = array(
-        'cover' => $v['urls']['thumbnail'],
-        'object' => $items_tmp[$v['local_id']],
+      $items[$key] = array(
+        'cover' => image_style_url('ding_item_list', $v),
+        'object' => $items_tmp[$key],
       );
       // Exit search loop if we have reached limit.
       if (count($items) == $limit) {
@@ -159,6 +151,15 @@ function alma_item_list_get_content($query, $limit, $cache) {
         'ajax'
       );
 
+      $img = array(
+        '#theme' => 'ting_object_cover',
+        '#object' => $ding_entity,
+        '#image_style' => 'ding_item_list',
+        '#attached' => array(
+          'js' => array(drupal_get_path('module', 'ting_covers') . '/js/ting-covers.js'),
+        ),
+      );
+
       $render[$faust[1]] = array(
         'local_id' => $faust[1],
         'faust' => $ding_entity->ding_entity_id,
@@ -170,6 +171,7 @@ function alma_item_list_get_content($query, $limit, $cache) {
         'rating' => 0,
         'rating_count' => 0,
         'review_count' => 0,
+        'image' => drupal_render($img),
       );
 
       if (module_exists('ding_voxb') && isset($ding_entity->isbn[0])) {
