@@ -56,8 +56,7 @@
   position: absolute;
 }
 .alma-item-list .ting-cover:before {
-  left: 0;
-  top: 10%;
+  left: 20px;
 }
 .alma-item-list .item-details {
   margin-left: 65px;
