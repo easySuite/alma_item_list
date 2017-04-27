@@ -9,5 +9,5 @@ dependencies[] = ting
 dependencies[] = ting_covers
 dependencies[] = transliteration
 dependencies[] = alma
-version = 7.x-2.5.0+easy
+version = 7.x-3.0.2
 
