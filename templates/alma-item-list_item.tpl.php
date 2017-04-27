@@ -5,12 +5,8 @@
  * Template file for single item list item.
  */
 ?>
-<div class="alma-item-list-item item-local_id-<?php print $local_id; ?>">
-  <div class="item-cover">
-    <a href="/ting/object/<?php print $faust; ?>">
-      <img src="<?php print $cover; ?>" />
-    </a>
-  </div>
+<div class="alma-item-list-item item-local_id-<?php print $faust; ?>">
+  <?php print $image; ?>
   <div class="item-details">
     <div class="item-title"><a href="/ting/object/<?php print $faust; ?>"><?php print $title; ?></a></div>
     <div class="item-author"><?php if (!empty($author)) { print t('By @author', array('@author' => $author)); } ?> (<?php print $year;?>)</div>
