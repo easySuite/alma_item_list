@@ -1,0 +1,21 @@
+<?php
+
+/**
+ * @file
+ */
+
+/**
+ * Disable, uninstall and clear Alma Item List module.
+ */
+function alma_item_list_update_7001() {
+  if (module_exists('alma_item_list')) {
+
+    db_delete('panels_pane')
+      ->condition('type', 'alma_item_list')
+      ->condition('subtype', 'alma_item_list')
+      ->execute();
+
+    module_disable(array('alma_item_list'));
+    drupal_uninstall_modules(array('alma_item_list'));
+  }
+}
