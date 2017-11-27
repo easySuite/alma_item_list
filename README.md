@@ -7,4 +7,4 @@ Module creates ctools plugin which adds block on any page with ting items depend
 Enable module on @/admin/modules page.
 
 ## Usage:
-Go to any panel page and add "Alma search list" plugin from "easyDDB" category.
+Go to any panel page and add "Alma search list" plugin from "easyOPAC" category.
