@@ -34,7 +34,7 @@ msgid "Search directly in DDELibra using native ccl search language"
 msgstr ""
 
 #: alma_item_list.info:0
-msgid "easyDDB"
+msgid "easyOPAC"
 msgstr ""
 
 #: plugins/content_types/alma_item_list.inc:10
